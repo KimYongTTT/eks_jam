@@ -5,7 +5,6 @@ spec:
   source:
     # HIGHLIGHT
     repoURL: ${GITOPS_REPO_URL_ARGOCD}
-    # HIGHLIGHT
     targetRevision: main
 
 # HIGHLIGHT

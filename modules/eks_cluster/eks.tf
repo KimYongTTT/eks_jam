@@ -5,6 +5,13 @@ data "aws_subnets" "private" {
   }
 }
 
+# Find the user currently in use by AWS
+data "aws_caller_identity" "current" {}
+
+provider "kubernetes" {
+  config_path = "~/.kube/config"
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.16"
@@ -36,6 +43,15 @@ module "eks" {
 
   create_cluster_security_group = false
   create_node_security_group    = false
+
+  # manage_aws_auth_configmap = true
+  # aws_auth_roles = [
+  #   {
+  #     rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*" # The ARN of the IAM role
+  #     username = "ops-role"                                                                                      # The user name within Kubernetes to map to the IAM role
+  #     groups   = ["system:masters"]                                                                              # A list of groups within Kubernetes to which the role is mapped; Checkout K8s Role and Rolebindings
+  #   }
+  # ]
 
   eks_managed_node_groups = {
     default = {

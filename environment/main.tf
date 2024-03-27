@@ -1,10 +1,10 @@
-provider "aws" {
-  region = local.region
-}
+provider "aws" {}
+
+data "aws_region" "current" {}
 
 locals {
   name   = var.environment_name
-  region = var.aws_region
+  region = data.aws_region.current
 
   vpc_cidr       = var.vpc_cidr
   num_of_subnets = min(length(data.aws_availability_zones.available.names), 3)
@@ -47,9 +47,6 @@ module "vpc" {
   tags = local.tags
 }
 
-resource "aws_codecommit_repository" "eks-jam-gitops-repository" {
-  repository_name = "eks-jam-gitops-repository"
-}
 
 #---------------------------------------------------------------
 # ArgoCD Admin Password credentials with Secrets Manager
@@ -69,4 +66,64 @@ resource "aws_secretsmanager_secret" "argocd" {
 resource "aws_secretsmanager_secret_version" "argocd" {
   secret_id     = aws_secretsmanager_secret.argocd.id
   secret_string = random_password.argocd.result
+}
+
+resource "aws_codecommit_repository" "gitops" {
+  repository_name = "eks-jam-gitops-repository"
+  description     = "CodeCommit repository for GitOps"
+}
+
+resource "aws_iam_user" "gitops" {
+  name = "eks-jam-gitops"
+  path = "/"
+}
+
+resource "aws_iam_user_ssh_key" "gitops" {
+  username   = aws_iam_user.gitops.name
+  encoding   = "SSH"
+  public_key = tls_private_key.gitops.public_key_openssh
+}
+
+resource "tls_private_key" "gitops" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+data "aws_iam_policy_document" "gitops_access" {
+  statement {
+    sid = ""
+    actions = [
+      "codecommit:GitPull",
+      "codecommit:GitPush"
+    ]
+    effect    = "Allow"
+    resources = [aws_codecommit_repository.gitops.arn]
+  }
+}
+
+resource "aws_iam_policy" "gitops_access" {
+  name   = "eks-jam-gitops"
+  path   = "/"
+  policy = data.aws_iam_policy_document.gitops_access.json
+}
+
+resource "aws_iam_user_policy_attachment" "gitops_access" {
+  user       = aws_iam_user.gitops.name
+  policy_arn = aws_iam_policy.gitops_access.arn
+}
+
+resource "local_file" "ssh_private_key" {
+  content         = tls_private_key.gitops.private_key_pem
+  filename        = "/home/ec2-user/.ssh/gitops_ssh.pem"
+  file_permission = "0400"
+}
+
+resource "local_file" "ssh_config" {
+  content         = <<EOF
+Host git-codecommit.*.amazonaws.com
+  User ${aws_iam_user.gitops.unique_id}
+  IdentityFile ~/.ssh/gitops_ssh.pem
+EOF
+  filename        = "/home/ec2-user/.ssh/config"
+  file_permission = "0600"
 }

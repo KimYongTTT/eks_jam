@@ -4,12 +4,6 @@ variable "environment_name" {
   default     = "eks-jam-gitops"
 }
 
-variable "aws_region" {
-  description = "AWS Region"
-  type        = string
-  default     = "us-west-2"
-}
-
 variable "vpc_cidr" {
   description = "CIDR block for VPC"
   type        = string
