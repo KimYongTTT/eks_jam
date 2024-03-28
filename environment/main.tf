@@ -47,6 +47,19 @@ module "vpc" {
   tags = local.tags
 }
 
+resource "aws_lb" "service-external-alb" {
+  name               = "service-external-alb"
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = [for subnet in module.vpc.public_subnets : subnet]
+
+  enable_deletion_protection = true
+  
+  tags = local.tags
+  
+  depends_on = [module.vpc]
+}
+
 
 #---------------------------------------------------------------
 # ArgoCD Admin Password credentials with Secrets Manager
