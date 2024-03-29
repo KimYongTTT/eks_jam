@@ -14,3 +14,13 @@ module "eks-green" {
 
   vpc_id = data.aws_vpc.vpc.id
 }
+
+resource "aws_lb_target_group" "tg-green" {
+  name = "tg-green-ui"
+  target_type = "alb"
+  port = 80
+  protocol = "TCP"
+  vpc_id = data.aws_vpc.vpc.id
+  
+  depends_on = [module.eks-green]
+}

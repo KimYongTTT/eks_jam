@@ -44,11 +44,12 @@ module "eks" {
   create_cluster_security_group = false
   create_node_security_group    = false
 
+  #TODO change to jam participant role 
   # manage_aws_auth_configmap = true
   # aws_auth_roles = [
   #   {
-  #     rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*" # The ARN of the IAM role
-  #     username = "ops-role"                                                                                      # The user name within Kubernetes to map to the IAM role
+  #     rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/WSParticipantRole" # The ARN of the IAM role
+  #     username = "admin"                                                                                      # The user name within Kubernetes to map to the IAM role
   #     groups   = ["system:masters"]                                                                              # A list of groups within Kubernetes to which the role is mapped; Checkout K8s Role and Rolebindings
   #   }
   # ]
