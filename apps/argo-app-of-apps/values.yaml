@@ -1,13 +1,10 @@
 spec:
   destination:
-    # HIGHLIGHT
     server: https://kubernetes.default.svc
   source:
-    # HIGHLIGHT
     repoURL: ${GITOPS_REPO_URL_ARGOCD}
     targetRevision: main
 
-# HIGHLIGHT
 applications:
   - name: assets
   - name: carts
