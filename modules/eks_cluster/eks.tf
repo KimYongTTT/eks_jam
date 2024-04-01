@@ -18,6 +18,22 @@ provider "helm" {
   }
 }
 
+resource "helm_release" "argocd" {
+  provider = helm
+
+  namespace        = "argocd"
+  create_namespace = true
+
+  name       = "argocd"
+  chart      = "argo-cd"
+  repository = "https://argoproj.github.io/argo-helm"
+  version    = "6.7.1"
+
+  values = [
+    file("${path.module}/../../helm-values/argocd.yaml")
+  ]
+}
+
 # module "eks_blueprints_addons" {
 #   source = "aws-ia/eks-blueprints-addons/aws"
 #   version = "~> 1.0" 
