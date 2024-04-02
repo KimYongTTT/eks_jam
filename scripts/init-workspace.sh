@@ -3,6 +3,7 @@
 sudo yum update
 sudo yum install -y yum-utils
 sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+sudo apt install jq
 
 # Install AWS CLI v2
 rm $HOME/.local/bin/aws
@@ -37,3 +38,7 @@ curl -sL https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Li
 
 rolearn=$(aws iam get-role --role-name $(aws cloud9 describe-environment-memberships --environment-id=$C9_PID | jq -r '.memberships[].userArn' | awk -F/ '{print $(NF-1)}') --query Role.Arn --output text)
 export JAM_LABS_USER_ARN=$rolearn
+
+export AWS_REGION=$(aws ec2 describe-availability-zones --output text --query 'AvailabilityZones[0].[RegionName]')
+
+alias k='kubectl'

@@ -9,12 +9,28 @@ data "aws_subnets" "private" {
 data "aws_caller_identity" "current" {}
 
 provider "kubernetes" {
-  config_path = "~/.kube/config"
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    # This requires the awscli to be installed locally where Terraform is executed
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+  }
 }
 
 provider "helm" {
   kubernetes {
-    config_path = "~/.kube/config"
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+    
+    exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    # This requires the awscli to be installed locally where Terraform is executed
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+  }
   }
 }
 
@@ -34,19 +50,23 @@ resource "helm_release" "argocd" {
   ]
 }
 
-# module "eks_blueprints_addons" {
-#   source = "aws-ia/eks-blueprints-addons/aws"
-#   version = "~> 1.0" 
+module "eks_blueprints_addons" {
+  source = "aws-ia/eks-blueprints-addons/aws"
+  version = "~> 1.0" 
 
-#   cluster_name      = module.eks.cluster_name
-#   cluster_endpoint  = module.eks.cluster_endpoint
-#   cluster_version   = module.eks.cluster_version
-#   oidc_provider_arn = module.eks.oidc_provider_arn
+  cluster_name      = module.eks.cluster_name
+  cluster_endpoint  = module.eks.cluster_endpoint
+  cluster_version   = module.eks.cluster_version
+  oidc_provider_arn = module.eks.oidc_provider_arn
 
-#   enable_aws_load_balancer_controller    = true
-  
-#   depends_on = [module.eks]
-# }
+  enable_aws_load_balancer_controller    = true
+  aws_load_balancer_controller = {
+    set = [{
+      name  = "enableServiceMutatorWebhook"
+      value = "false"
+    }]
+  }
+}
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"

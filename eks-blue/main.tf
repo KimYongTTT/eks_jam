@@ -17,9 +17,9 @@ module "eks-blue" {
 
 resource "aws_lb_target_group" "tg-blue" {
   name = "tg-blue-ui"
-  target_type = "alb"
+  target_type = "ip"
   port = 80
-  protocol = "HTTP"
+  protocol = "TCP"
   vpc_id = data.aws_vpc.vpc.id
   
   depends_on = [module.eks-blue]
