@@ -18,7 +18,6 @@ locals {
 
   tags = {
     Blueprint  = local.name
-    GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
   }
 }
 
@@ -55,8 +54,6 @@ resource "aws_lb" "service-external-alb" {
   load_balancer_type = "application"
   subnets            = [for subnet in module.vpc.public_subnets : subnet]
 
-  enable_deletion_protection = true
-  
   tags = local.tags
   
   depends_on = [module.vpc]
