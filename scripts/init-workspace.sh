@@ -41,9 +41,23 @@ rm argocd-linux-amd64
 K9S_VERSION=v0.27.4
 curl -sL https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Linux_amd64.tar.gz | sudo tar xfz - -C /usr/local/bin k9s
 
+# Generate SSH key pair, create IAM user, attach policy, upload SSH public key
+IAM_USER="jam-codecommit-user"
+ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
+aws iam create-user --user-name $IAM_USER
+aws iam attach-user-policy --user-name $IAM_USER --policy-arn arn:aws:iam::aws:policy/AWSCodeCommitPowerUser
+aws iam upload-ssh-public-key --user-name $IAM_USER --ssh-public-key-body file://~/.ssh/id_rsa.pub
+SSH_KEY_ID=$(aws iam list-ssh-public-keys --user-name $IAM_USER --query 'SSHPublicKeys[?Status==`Active`].SSHPublicKeyId' --output text)
+cat <<EOF > ~/.ssh/config
+Host git-codecommit.*.amazonaws.com
+    User $SSH_KEY_ID
+    IdentityFile ~/.ssh/id_rsa
+EOF
+chmod 600 ~/.ssh/config
+
+# export JAM_LABS_USER_ARN & AWS_REGION
 rolearn=$(aws iam get-role --role-name $(aws cloud9 describe-environment-memberships --environment-id=$C9_PID | jq -r '.memberships[].userArn' | awk -F/ '{print $(NF-1)}') --query Role.Arn --output text)
 export JAM_LABS_USER_ARN=$rolearn
-
 export AWS_REGION=$(aws ec2 describe-availability-zones --output text --query 'AvailabilityZones[0].[RegionName]')
 
 alias k='kubectl'
