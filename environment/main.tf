@@ -118,27 +118,27 @@ resource "aws_codecommit_repository" "gitops" {
 #   public_key = tls_private_key.gitops.public_key_openssh
 # }
 
-resource "tls_private_key" "gitops" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
+# resource "tls_private_key" "gitops" {
+#   algorithm = "RSA"
+#   rsa_bits  = 4096
+# }
 
-resource "local_file" "ssh_private_key" {
-  content         = tls_private_key.gitops.private_key_pem
-  filename        = pathexpand("~/.ssh/gitops_ssh.pem")
-  file_permission = "0400"
+# resource "local_file" "ssh_private_key" {
+#   content         = tls_private_key.gitops.private_key_pem
+#   filename        = pathexpand("~/.ssh/gitops_ssh.pem")
+#   file_permission = "0400"
   
-  depends_on = [tls_private_key.gitops]
-}
+#   depends_on = [tls_private_key.gitops]
+# }
 
-resource "local_file" "ssh_config" {
-  content         = <<EOF
-Host git-codecommit.*.amazonaws.com
-  User ${data.aws_caller_identity.current.user_id}
-  IdentityFile ~/.ssh/gitops_ssh.pem
-EOF
-  filename        = pathexpand("~/.ssh/config")
-  file_permission = "0600"
+# resource "local_file" "ssh_config" {
+#   content         = <<EOF
+# Host git-codecommit.*.amazonaws.com
+#   User ${data.aws_caller_identity.current.user_id}
+#   IdentityFile ~/.ssh/gitops_ssh.pem
+# EOF
+#   filename        = pathexpand("~/.ssh/config")
+#   file_permission = "0600"
   
-  depends_on = [local_file.ssh_private_key]
-}
+#   depends_on = [local_file.ssh_private_key]
+# }
