@@ -53,12 +53,37 @@ resource "aws_lb" "service-external-alb" {
   internal           = false
   load_balancer_type = "application"
   subnets            = [for subnet in module.vpc.public_subnets : subnet]
+  security_groups = [aws_security_group.alb_sg_http.id]
 
   tags = local.tags
   
   depends_on = [module.vpc]
 }
 
+resource "aws_security_group" "alb_sg_http" {
+  name        = "allow_http"
+  vpc_id      = module.vpc.vpc_id
+
+  tags = {
+    Name = "sg-extenal-alb"
+  }
+  
+  depends_on = [module.vpc]
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
+  security_group_id = aws_security_group.alb_sg_http.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
+  security_group_id = aws_security_group.alb_sg_http.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
+}
 
 #---------------------------------------------------------------
 # ArgoCD Admin Password credentials with Secrets Manager
