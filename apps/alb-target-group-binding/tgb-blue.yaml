@@ -1,0 +1,11 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: tgb-ui
+  namespace: ui
+spec:
+  targetType: ip
+  serviceRef:
+    name: ui # route traffic to the ui-service
+    port: 80
+  targetGroupARN: {TARGET_GROUP_ARN}

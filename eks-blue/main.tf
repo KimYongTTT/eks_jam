@@ -23,4 +23,8 @@ resource "aws_lb_target_group" "tg-blue" {
   vpc_id = data.aws_vpc.vpc.id
   
   depends_on = [module.eks-blue]
+  
+  health_check {
+    path = "/actuator/health/liveness"
+  }
 }
