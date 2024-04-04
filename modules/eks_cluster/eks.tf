@@ -8,6 +8,13 @@ data "aws_subnets" "private" {
 # Find the user currently in use by AWS
 data "aws_caller_identity" "current" {}
 
+data "aws_security_group" "sg_external_alb" {
+  filter {
+    name   = "tag:Name"
+    values = ["eks-jam-sg-external-alb"]
+  }
+}
+
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
@@ -126,6 +133,18 @@ module "eks" {
       labels = {
         workshop-default = "yes"
       }
+    }
+  }
+  
+  cluster_security_group_additional_rules = {
+    ingress_from_alb = {
+      description = "Ingress rule for node from external alb"
+      protocol    = "tcp"
+      from_port   = 8080
+      to_port     = 8080
+      type        = "ingress"
+      self        = true
+      source_security_group_id = data.aws_security_group.sg_external_alb.id
     }
   }
 }

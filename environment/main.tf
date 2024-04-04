@@ -61,11 +61,11 @@ resource "aws_lb" "service-external-alb" {
 }
 
 resource "aws_security_group" "alb_sg_http" {
-  name        = "allow_http"
+  name        = "eks-jam-sg-external-alb"
   vpc_id      = module.vpc.vpc_id
 
   tags = {
-    Name = "sg-extenal-alb"
+    Name = "eks-jam-sg-external-alb"
   }
   
   depends_on = [module.vpc]
