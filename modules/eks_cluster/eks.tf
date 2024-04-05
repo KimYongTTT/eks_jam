@@ -105,7 +105,7 @@ module "eks" {
   subnet_ids = data.aws_subnets.private.ids
 
   create_cluster_security_group = false
-  create_node_security_group    = false
+  create_node_security_group    = true
 
   manage_aws_auth_configmap = true
   aws_auth_roles = [
@@ -136,15 +136,31 @@ module "eks" {
     }
   }
   
-  cluster_security_group_additional_rules = {
+  node_security_group_additional_rules = {
     ingress_from_alb = {
       description = "Ingress rule for node from external alb"
       protocol    = "tcp"
       from_port   = 8080
       to_port     = 8080
       type        = "ingress"
-      self        = true
       source_security_group_id = data.aws_security_group.sg_external_alb.id
+    }
+    ingress_self_all = {
+      description = "Node to node all ports/protocols"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      type        = "ingress"
+      self        = true
+    }
+    egress_all = {
+      description      = "Node all egress"
+      protocol         = "-1"
+      from_port        = 0
+      to_port          = 0
+      type             = "egress"
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
     }
   }
 }
