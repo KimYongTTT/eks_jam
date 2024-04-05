@@ -104,7 +104,7 @@ module "eks" {
   vpc_id     = var.vpc_id
   subnet_ids = data.aws_subnets.private.ids
 
-  create_cluster_security_group = false
+  create_cluster_security_group = true
   create_node_security_group    = true
 
   manage_aws_auth_configmap = true
