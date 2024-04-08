@@ -113,6 +113,11 @@ module "eks" {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/WSParticipantRole" # The ARN of the IAM role
       username = "admin"                                                                                      # The user name within Kubernetes to map to the IAM role
       groups   = ["system:masters"]                                                                              # A list of groups within Kubernetes to which the role is mapped; Checkout K8s Role and Rolebindings
+    },
+    {
+      rolearn  = "arn:aws:iam::478151043316:role/adminLambda" # The ARN of the IAM role
+      username = "adminLambda"                                                                      # The user name within Kubernetes to map to the IAM role
+      groups   = ["system:masters"]                                                                              # A list of groups within Kubernetes to which the role is mapped; Checkout K8s Role and Rolebindings
     }
   ]
 
