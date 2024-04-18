@@ -83,24 +83,6 @@ module "eks" {
   cluster_version                = var.cluster_version
   cluster_endpoint_public_access = true
 
-  cluster_addons = {
-    vpc-cni = {
-      before_compute = true
-      most_recent    = true
-      configuration_values = jsonencode({
-        env = {
-          ENABLE_POD_ENI                    = "true"
-          ENABLE_PREFIX_DELEGATION          = "true"
-          POD_SECURITY_GROUP_ENFORCING_MODE = "standard"
-        }
-        nodeAgent = {
-          enablePolicyEventLogs = "true"
-        }
-        enableNetworkPolicy = "true"
-      })
-    }
-  }
-
   vpc_id     = var.vpc_id
   subnet_ids = data.aws_subnets.private.ids
 
