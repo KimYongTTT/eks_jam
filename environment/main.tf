@@ -85,7 +85,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
 
-resource "aws_codecommit_repository" "gitops" {
-  repository_name = "eks-jam-gitops-repository"
-  description     = "CodeCommit repository for GitOps"
-}
+#resource "aws_codecommit_repository" "gitops" {
+#  repository_name = "eks-jam-gitops-repository"
+#  description     = "CodeCommit repository for GitOps"
+#}
