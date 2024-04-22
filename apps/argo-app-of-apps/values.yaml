@@ -3,7 +3,7 @@ spec:
     server: https://kubernetes.default.svc
   source:
     repoURL: ${GITOPS_REPO_URL_ARGOCD}
-    targetRevision: master
+    targetRevision: main
 
 applications:
   - name: assets

@@ -12,7 +12,7 @@ spec:
   source:
     path: argo-app-of-apps
     repoURL: ${GITOPS_REPO_URL_ARGOCD}
-    targetRevision: master
+    targetRevision: main
   syncPolicy:
     automated:
       prune: true
