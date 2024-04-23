@@ -14,7 +14,7 @@ else
 fi
 } && {
   # eks_jam/eks_blue
-  cd $HOME_DIR/eks_jam/eks_blue
+  cd $HOME_DIR/eks_jam/eks-blue
   if [ -d $HOME_DIR/eks_jam/eks-blue/.terraform ] ; then
       terraform apply -auto-approve
   else
