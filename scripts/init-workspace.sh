@@ -73,7 +73,7 @@ fi
 
 # eks_jam/eks_blue
 cd $HOME_DIR/eks_jam/eks_blue
-if [ -d $HOME_DIR/eks_jam/eks_blue/.terraform ] ; then
+if [ -d $HOME_DIR/eks_jam/eks-blue/.terraform ] ; then
     terraform apply -auto-approve >> tfapply.log
 else
     terraform init -input=false && terraform apply -auto-approve  >> tfapply.log
