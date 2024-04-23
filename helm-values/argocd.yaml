@@ -7,8 +7,8 @@ configs:
     server.insecure: true
   secret:
     ## `htpasswd -nbBC 10 "" $ARGO_PWD | tr -d ':\n' | sed 's/$2y/$2a/'`
-    ## admin!@#$
-    argocdServerAdminPassword: "$2a$10$USqGNceHYdSLMJjEcvWpqekPWvp0g9Bpy67LF5MEUFdZyIp5swGBi%"
+    ## admin!@#!
+    argocdServerAdminPassword: "$2a$10$K8D5/uDajuTYLxWIJhTNtebu9vLRXnLLoNsd4x2GtKScyXjBZXRFe"
 
 server:
   service:
