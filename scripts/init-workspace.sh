@@ -59,9 +59,9 @@
 #rolearn=$(aws iam get-role --role-name $(aws cloud9 describe-environment-memberships --environment-id=$C9_PID | jq -r '.memberships[].userArn' | awk -F/ '{print $(NF-1)}') --query Role.Arn --output text)
 #export JAM_LABS_USER_ARN=$rolearn
 
+export HOME_DIR="/opt/workspace"
 
 echo '>> terraform init & apply step ...'
-
 aws sts get-caller-identity
 # eks_jam/environment
 cd $HOME_DIR/eks_jam/environment
